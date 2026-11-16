@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f5f4f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141317" media="(prefers-color-scheme: dark)">
+<title>Limpieza de la casa</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧹</text></svg>">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface-2: #f9f8f5;
+    --ink: #1d1b20;
+    --muted: #5d5a66;
+    --line: #e7e4de;
+    --on-accent: #ffffff;
+    --hl-bg: #fff3bf;
+    --hl-ink: #5c4300;
+    --hl-line: #efd36a;
+    --ok: #15803d;
+    --ok-soft: #e2f5e8;
+    --shadow: 0 1px 2px rgba(20,18,30,.05), 0 8px 24px rgba(20,18,30,.07);
+    --radius: 22px;
+
+    --astrid: #7c3aed; --astrid-soft: #f1eafe; --astrid-ink: #4c1d95;
+    --jimmy:  #0e7490; --jimmy-soft:  #dff3f8; --jimmy-ink:  #0b4a5c;
+    --sole:   #d97706; --sole-soft:   #fdf0d8; --sole-ink:   #7a3e05;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141317;
+      --surface: #1e1d23;
+      --surface-2: #25242b;
+      --ink: #f2f0f5;
+      --muted: #aaa6b4;
+      --line: #322f39;
+      --on-accent: #141317;
+      --hl-bg: #3a2f0c;
+      --hl-ink: #ffe28a;
+      --hl-line: #6b5414;
+      --ok: #4ade80;
+      --ok-soft: #13301d;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+
+      --astrid: #b197fc; --astrid-soft: #2b2342; --astrid-ink: #e2d7ff;
+      --jimmy:  #4fc3dc; --jimmy-soft:  #12313a; --jimmy-ink:  #c8eef7;
+      --sole:   #f5b544; --sole-soft:   #36280f; --sole-ink:   #fde3b0;
+    }
+  }
+
+  .p-astrid { --pc: var(--astrid); --pc-soft: var(--astrid-soft); --pc-ink: var(--astrid-ink); }
+  .p-jimmy  { --pc: var(--jimmy);  --pc-soft: var(--jimmy-soft);  --pc-ink: var(--jimmy-ink); }
+  .p-sole   { --pc: var(--sole);   --pc-soft: var(--sole-soft);   --pc-ink: var(--sole-ink); }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------- Encabezado ---------- */
+  .top { padding: 28px 0 8px; }
+  .eyebrow { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: .02em; }
+  .top h1 { margin: 0; font-size: clamp(40px, 11vw, 56px); line-height: 1; letter-spacing: -.03em; font-weight: 800; }
+  .rango { margin: 6px 0 12px; font-size: 22px; font-weight: 600; color: var(--muted); }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .chip-meta {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 11px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--line);
+    font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .chip-meta.actual { background: var(--ok-soft); border-color: transparent; color: var(--ok); }
+  .chip-meta.refri { background: var(--hl-bg); border-color: var(--hl-line); color: var(--hl-ink); }
+  .btn-volver {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 999px; border: 0; cursor: pointer;
+    background: var(--ink); color: var(--bg); font-size: 14px; font-weight: 700;
+  }
+  .btn-volver[hidden] { display: none; }
+
+  /* ---------- Secciones ---------- */
+  section { margin-top: 32px; }
+  h2 { margin: 0 0 4px; font-size: 21px; letter-spacing: -.01em; }
+  .sub { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+
+  /* ---------- Hoy ---------- */
+  .hoy-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px; box-shadow: var(--shadow);
+  }
+  .hoy-kicker { margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ok); }
+  .hoy-card h2 { margin: 2px 0 14px; font-size: 24px; }
+  .hoy-card h2 small { display: block; font-size: 15px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile {
+    border-radius: 16px; padding: 14px; min-height: 112px;
+    background: var(--surface-2); border: 1px solid var(--line);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .tile.persona { background: var(--pc-soft); border-color: transparent; color: var(--pc-ink); }
+  .tile.span-2 { grid-column: 1 / -1; }
+  .tile-label { font-size: 13px; font-weight: 700; opacity: .85; }
+  .tile-big { font-size: 26px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+  .tile-small { font-size: 13px; opacity: .85; margin-top: auto; }
+  .tile.apagado { color: var(--muted); }
+  .tile.apagado .tile-big { font-size: 19px; font-weight: 700; }
+  .tile.finde { background: var(--hl-bg); border-color: var(--hl-line); color: var(--hl-ink); }
+  .tile.finde .tile-big { font-size: 22px; }
+  .finde-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+  .finde-list li {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface); color: var(--ink); border-radius: 12px; padding: 8px 10px;
+    font-weight: 600; font-size: 15px;
+  }
+  .finde-list .estado { margin-left: auto; font-size: 13px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .finde-list .estado.ok { color: var(--ok); }
+  .manana { margin: 12px 0 0; font-size: 14px; color: var(--muted); }
+  .otra {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+    background: var(--surface); border: 1px dashed var(--line); border-radius: 16px; padding: 12px 14px;
+    color: var(--muted); font-size: 15px;
+  }
+  .otra strong { color: var(--ink); }
+
+  /* ---------- Avatares ---------- */
+  .avatar {
+    flex: none; width: 30px; height: 30px; border-radius: 50%;
+    display: inline-grid; place-items: center;
+    background: var(--pc); color: var(--on-accent); font-weight: 800; font-size: 14px;
+  }
+
+  /* ---------- Tarjetas de bloque ---------- */
+  .cards { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+  .card {
+    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+    border: 1px solid var(--line); border-top: 6px solid var(--pc);
+    overflow: hidden; display: flex; flex-direction: column;
+  }
+  .card-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 0; }
+  .who { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+  .who .avatar { width: 36px; height: 36px; font-size: 16px; }
+  .progress-txt { font-size: 14px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .block {
+    margin: 12px 16px 0; padding: 14px; border-radius: 16px;
+    background: var(--pc-soft); color: var(--pc-ink);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .block-ico { font-size: 44px; line-height: 1; }
+  .block-letter { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; opacity: .8; }
+  .block-name { font-size: 22px; font-weight: 800; line-height: 1.15; letter-spacing: -.01em; }
+  .block-time { font-size: 13px; font-weight: 600; opacity: .85; margin-top: 2px; }
+  .bar { margin: 12px 16px 0; height: 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+  .bar > span { display: block; height: 100%; width: 0; background: var(--pc); border-radius: 999px; transition: width .25s ease; }
+  .tasks { padding: 6px 8px 8px; flex: 1; }
+  .group { margin: 12px 8px 2px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .task {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 8px; min-height: 44px; border-radius: 12px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .task:hover { background: var(--surface-2); }
+  .task input {
+    appearance: none; -webkit-appearance: none; margin: 0; flex: none;
+    width: 24px; height: 24px; border-radius: 8px;
+    border: 2px solid var(--pc); background: var(--surface);
+    display: grid; place-items: center; cursor: pointer;
+    transition: background .15s ease;
+  }
+  .task input::after {
+    content: ""; width: 6px; height: 11px; margin-top: -2px;
+    border: solid var(--on-accent); border-width: 0 3px 3px 0;
+    transform: rotate(45deg) scale(0); transition: transform .15s ease;
+  }
+  .task input:checked { background: var(--pc); }
+  .task input:checked::after { transform: rotate(45deg) scale(1); }
+  .task input:focus-visible { outline: 3px solid var(--pc); outline-offset: 2px; }
+  .task .txt { padding-top: 1px; }
+  .task input:checked + .txt { text-decoration: line-through; color: var(--muted); }
+  .task.destacada { background: var(--hl-bg); border: 1px solid var(--hl-line); margin: 4px 0; }
+  .tag-hl {
+    display: inline-block; margin-left: 4px; padding: 1px 8px; border-radius: 999px;
+    background: var(--hl-line); color: var(--hl-ink); font-size: 12px; font-weight: 800; white-space: nowrap;
+  }
+  @media (prefers-color-scheme: dark) { .tag-hl { color: #fff3c4; } }
+  .nota-refri { margin: 4px 8px 0; font-size: 13px; color: var(--muted); }
+  .done-msg {
+    display: none; margin: 0 16px 12px; padding: 10px 12px; border-radius: 12px;
+    background: var(--ok-soft); color: var(--ok); font-weight: 700; text-align: center;
+  }
+  .card.completo .done-msg { display: block; }
+  .card-foot {
+    border-top: 1px solid var(--line); padding: 12px 16px; font-size: 14px; color: var(--muted);
+    background: var(--surface-2);
+  }
+  .card-foot strong { color: var(--ink); }
+
+  .guardado {
+    margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    font-size: 14px; color: var(--muted);
+  }
+  .guardado.error { color: var(--hl-ink); background: var(--hl-bg); border-radius: 12px; padding: 10px 12px; }
+  .btn-link {
+    border: 0; background: none; padding: 6px 0; cursor: pointer;
+    color: var(--ink); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; font-size: 14px;
+  }
+
+  /* ---------- Calendario ---------- */
+  .leyenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 12px; font-size: 14px; color: var(--muted); }
+  .cal { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .dia {
+    position: relative; display: flex; align-items: center; gap: 12px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 10px 12px;
+  }
+  .dia.finde { background: var(--surface-2); }
+  .dia.es-hoy { border: 2px solid var(--ok); box-shadow: 0 0 0 4px var(--ok-soft); }
+  .dia-fecha { flex: none; width: 46px; text-align: center; }
+  .dia-fecha .dn { display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .dia-fecha .dd { display: block; font-size: 22px; font-weight: 800; line-height: 1.1; }
+  .dia-tareas { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px; border-radius: 999px; font-size: 14px; font-weight: 600;
+    background: var(--pc-soft); color: var(--pc-ink);
+  }
+  .chip b { font-weight: 800; }
+  .chip.bloques { background: var(--hl-bg); color: var(--hl-ink); }
+  .badge-hoy {
+    position: absolute; top: -9px; right: 12px;
+    background: var(--ok); color: var(--on-accent); font-size: 11px; font-weight: 800; letter-spacing: .08em;
+    padding: 2px 8px; border-radius: 999px;
+  }
+  @media (prefers-color-scheme: dark) { .badge-hoy { color: #0b1f12; } }
+  @media (min-width: 900px) {
+    .cal { grid-template-columns: repeat(7, 1fr); }
+    .dia { flex-direction: column; align-items: stretch; padding: 12px 10px; }
+    .dia-fecha { width: auto; text-align: left; }
+    .dia-tareas { flex-direction: column; }
+    .chip { border-radius: 10px; }
+  }
+
+  /* ---------- Próximas semanas ---------- */
+  .prox-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .prox-grid { grid-template-columns: 1fr 1fr; } }
+  .prox {
+    display: block; width: 100%; text-align: left; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px;
+    box-shadow: var(--shadow);
+  }
+  .prox:hover { border-color: var(--muted); }
+  .prox:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .prox-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+  .prox-head strong { font-size: 18px; }
+  .prox-head span { color: var(--muted); font-size: 14px; font-weight: 600; }
+  .prox ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .prox li { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+  .prox li .nom { font-weight: 700; width: 56px; }
+  .prox li .flecha { color: var(--muted); }
+  .prox li .blq { font-weight: 600; }
+  .prox-extra { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+  .prox-ver { display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ---------- Reglas ---------- */
+  .reglas { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  @media (min-width: 760px) { .reglas { grid-template-columns: repeat(3, 1fr); } }
+  .reglas li {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px;
+  }
+  .reglas .ico { font-size: 28px; line-height: 1; flex: none; }
+  .reglas strong { display: block; margin-bottom: 2px; }
+  .reglas p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  footer.pie { margin: 36px 0 24px; text-align: center; font-size: 13px; color: var(--muted); }
+
+  /* ---------- Barra de navegación inferior ---------- */
+  body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+  .navbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+  }
+  .navbar .inner { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .nav-btn {
+    min-height: 48px; border-radius: 14px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    font-size: clamp(13px, 3.7vw, 15px); font-weight: 700; padding: 0 8px; white-space: nowrap;
+  }
+  .nav-btn:active { transform: scale(.98); }
+  .nav-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .nav-btn:focus-visible, .btn-volver:focus-visible, .btn-link:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">🏠 Rotación de limpieza de la casa</p>
+    <h1 id="titulo">Semana 1</h1>
+    <p class="rango" id="rango"></p>
+    <div class="meta">
+      <span id="meta"></span>
+      <button id="btnVolver" class="btn-volver" type="button" hidden>↩ Volver a esta semana</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <noscript><p>Esta página necesita JavaScript para calcular la semana.</p></noscript>
+
+  <section id="hoy" aria-live="polite"></section>
+
+  <section aria-labelledby="t-bloques">
+    <h2 id="t-bloques">🧽 Bloques del fin de semana</h2>
+    <p class="sub">Cada uno hace su bloque el <strong>sábado o el domingo</strong> (tú eliges el día, sin horario).</p>
+    <div class="cards" id="cards"></div>
+    <div class="guardado" id="guardado"></div>
+  </section>
+
+  <section aria-labelledby="t-cal">
+    <h2 id="t-cal">📅 La semana día por día</h2>
+    <p class="leyenda">
+      <span>🗑️ Basura: los 3 tachos (cocina, arena de gatos y baño)</span>
+      <span>🧹 Aspirar sala y pasadizo</span>
+    </p>
+    <ol class="cal" id="calendario"></ol>
+  </section>
+
+  <section aria-labelledby="t-prox">
+    <h2 id="t-prox">🔭 Próximas 2 semanas</h2>
+    <p class="sub">Toca una semana para verla completa.</p>
+    <div class="prox-grid" id="proximas"></div>
+  </section>
+
+  <section aria-labelledby="t-reglas">
+    <h2 id="t-reglas">🤝 Reglas de convivencia</h2>
+    <p class="sub">Para todos, todos los días.</p>
+    <ul class="reglas">
+      <li><span class="ico">🍽️</span><div><strong>Cocina al día</strong><p>Lo que se ensucia en la cocina se lava el mismo día. No dejar restos de comida.</p></div></li>
+      <li><span class="ico">🚿</span><div><strong>Después de ducharte</strong><p>Seca el piso, saca el pelo y devuelve el shampoo y el jabón al estante.</p></div></li>
+      <li><span class="ico">🛏️</span><div><strong>Tu cuarto, tu tarea</strong><p>Cada uno se encarga de su propio cuarto.</p></div></li>
+    </ul>
+  </section>
+
+  <footer class="pie">La rotación es fija: se repite cada 3 semanas.</footer>
+</main>
+
+<nav class="navbar" aria-label="Cambiar de semana">
+  <div class="inner">
+    <button class="nav-btn" id="btnPrev" type="button">← Semana anterior</button>
+    <button class="nav-btn" id="btnNext" type="button">Semana siguiente →</button>
+  </div>
+</nav>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     CONFIGURACIÓN — cambia aquí lo que necesites
+     ========================================================= */
+
+  // Lunes en que empieza la Semana 1 (formato AAAA-MM-DD).
+  const FECHA_INICIO = '2026-11-16';
+  const ZONA_HORARIA = 'America/Lima';
+
+  const PERSONAS = [
+    { id: 'astrid', nombre: 'Astrid' },
+    { id: 'jimmy',  nombre: 'Jimmy'  },
+    { id: 'sole',   nombre: 'Sole'   },
+  ];
+
+  // Orden en la Semana 1: PERSONAS[0] → BLOQUES[0], PERSONAS[1] → BLOQUES[1], ...
+  // Cada semana todos avanzan un bloque (A → B → C → A).
+  const BLOQUES = [
+    {
+      letra: 'A', nombre: 'Cocina', icono: '🍳', minutos: 65,
+      grupos: [{ titulo: null, tareas: [
+        { id: 'piso',         texto: 'Barrer y trapear el piso' },
+        { id: 'cocina',       texto: 'Limpiar la cocina: hornillas y superficie' },
+        { id: 'refri-fuera',  texto: 'Limpiar la refrigeradora por fuera' },
+        { id: 'refri-dentro', texto: 'Limpiar la refrigeradora por dentro', soloPares: true },
+        { id: 'estantes',     texto: 'Limpiar los estantes' },
+      ]}],
+    },
+    {
+      letra: 'B', nombre: 'Baño + Lavandería', icono: '🛁', minutos: 75,
+      grupos: [
+        { titulo: '🚽 Baño', tareas: [
+          { id: 'water',     texto: 'Limpiar el wáter' },
+          { id: 'lavatorio', texto: 'Limpiar el caño y el lavatorio' },
+          { id: 'ducha',     texto: 'Limpiar la ducha' },
+          { id: 'piso-bano', texto: 'Trapear el piso del baño' },
+        ]},
+        { titulo: '🧺 Lavandería', tareas: [
+          { id: 'cano-lav',  texto: 'Limpiar la zona del caño' },
+          { id: 'piso-lav',  texto: 'Barrer y trapear el piso' },
+          { id: 'organizar', texto: 'Organizar las cosas' },
+        ]},
+      ],
+    },
+    {
+      letra: 'C', nombre: 'Sala + Pasadizo + Exterior', icono: '🛋️', minutos: 70,
+      grupos: [
+        { titulo: '🛋️ Sala', tareas: [
+          { id: 'ordenar',      texto: 'Ordenar las cosas' },
+          { id: 'aspirar-sala', texto: 'Aspirar / barrer' },
+          { id: 'trapear-sala', texto: 'Trapear' },
+        ]},
+        { titulo: '🚪 Pasadizo', tareas: [
+          { id: 'aspirar-pas', texto: 'Aspirar' },
+          { id: 'trapear-pas', texto: 'Trapear' },
+        ]},
+        { titulo: '🌳 Exterior', tareas: [
+          { id: 'area-comun', texto: 'Barrer el área común del primer piso' },
+          { id: 'vereda',     texto: 'Barrer la vereda y la fachada' },
+        ]},
+      ],
+    },
+  ];
+
+  // Basura diaria (índices de día: 0 = lunes … 6 = domingo).
+  // Semanas impares: Astrid estos días y Jimmy el resto. Semanas pares: se intercambian.
+  const BASURA_DIAS_ASTRID_IMPAR = [0, 2, 4, 6]; // lun, mié, vie, dom
+  const ASPIRADO = { personaId: 'sole', dias: [0, 3] }; // lunes y jueves
+
+  /* ========================================================= */
+
+  const DIA_MS = 86400000;
+  const DIAS = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+  const DIAS_CORTOS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  const STORAGE_PREFIX = 'rotacion-limpieza:v1:semana-';
+
+  const $ = (s) => document.querySelector(s);
+  const persona = (id) => PERSONAS.find((p) => p.id === id);
+
+  /* ---------- Fechas (todo en días "UTC" para evitar líos de horario) ---------- */
+  function isoAMs(iso) {
+    const [y, m, d] = iso.split('-').map(Number);
+    return Date.UTC(y, m - 1, d);
+  }
+  const INICIO_MS = isoAMs(FECHA_INICIO);
+
+  function hoyMs() {
+    try {
+      const partes = new Intl.DateTimeFormat('en-CA', {
+        timeZone: ZONA_HORARIA, year: 'numeric', month: '2-digit', day: '2-digit',
+      }).formatToParts(new Date());
+      const v = (t) => Number(partes.find((p) => p.type === t).value);
+      return Date.UTC(v('year'), v('month') - 1, v('day'));
+    } catch (e) {
+      const n = new Date();
+      return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate());
+    }
+  }
+
+  const semanaDe = (ms) => Math.floor((ms - INICIO_MS) / DIA_MS / 7) + 1;
+  const inicioSemana = (n) => INICIO_MS + (n - 1) * 7 * DIA_MS;
+  const diaIdx = (ms) => (new Date(ms).getUTCDay() + 6) % 7;
+  const esPar = (n) => n % 2 === 0;
+  const fecha = (ms) => new Date(ms);
+
+  function fmtRango(n, anioRef) {
+    const a = fecha(inicioSemana(n));
+    const b = fecha(inicioSemana(n) + 6 * DIA_MS);
+    const ya = a.getUTCFullYear(), yb = b.getUTCFullYear();
+    if (ya !== yb) {
+      return `${a.getUTCDate()} ${MESES[a.getUTCMonth()]} ${ya} – ${b.getUTCDate()} ${MESES[b.getUTCMonth()]} ${yb}`;
+    }
+    const anio = ya !== anioRef ? ` ${ya}` : '';
+    if (a.getUTCMonth() === b.getUTCMonth()) {
+      return `${a.getUTCDate()} – ${b.getUTCDate()} ${MESES[b.getUTCMonth()]}${anio}`;
+    }
+    return `${a.getUTCDate()} ${MESES[a.getUTCMonth()]} – ${b.getUTCDate()} ${MESES[b.getUTCMonth()]}${anio}`;
+  }
+  function fmtFecha(ms) {
+    const d = fecha(ms);
+    return `${DIAS[diaIdx(ms)]} ${d.getUTCDate()} ${MESES[d.getUTCMonth()]}`;
+  }
+
+  /* ---------- Reglas de rotación ---------- */
+  function bloqueDe(personaIndex, n) {
+    return BLOQUES[(((personaIndex + n - 1) % 3) + 3) % 3];
+  }
+  function basuraDe(n, d) {
+    const diaDeAstrid = BASURA_DIAS_ASTRID_IMPAR.includes(d);
+    const tocaAstrid = esPar(n) ? !diaDeAstrid : diaDeAstrid;
+    return persona(tocaAstrid ? 'astrid' : 'jimmy');
+  }
+  function diasBasura(personaId, n) {
+    return [0, 1, 2, 3, 4, 5, 6].filter((d) => basuraDe(n, d).id === personaId);
+  }
+  const tocaAspirar = (d) => ASPIRADO.dias.includes(d);
+  function tareasVisibles(bloque, n) {
+    return bloque.grupos.map((g) => ({
+      titulo: g.titulo,
+      tareas: g.tareas.filter((t) => !t.soloPares || esPar(n)),
+    }));
+  }
+
+  /* ---------- Guardado local (con respaldo en memoria) ---------- */
+  const almacen = (function () {
+    const memoria = {};
+    let ok = true;
+    try {
+      const k = '__prueba__';
+      window.localStorage.setItem(k, k);
+      window.localStorage.removeItem(k);
+    } catch (e) { ok = false; }
+    return {
+      get ok() { return ok; },
+      leer(n) {
+        if (ok) {
+          try {
+            const raw = window.localStorage.getItem(STORAGE_PREFIX + n);
+            if (raw) return JSON.parse(raw) || {};
+            return memoria[n] || {};
+          } catch (e) { /* sigue con memoria */ }
+        }
+        return memoria[n] || {};
+      },
+      guardar(n, datos) {
+        memoria[n] = datos;
+        if (!ok) return;
+        try {
+          if (Object.keys(datos).length) window.localStorage.setItem(STORAGE_PREFIX + n, JSON.stringify(datos));
+          else window.localStorage.removeItem(STORAGE_PREFIX + n);
+        } catch (e) { ok = false; renderGuardado(); }
+      },
+    };
+  })();
+
+  /* ---------- Estado ---------- */
+  let hoy = hoyMs();
+  const semanaRef = () => Math.max(1, semanaDe(hoy));
+  let semanaVista = leerHash() || semanaRef();
+
+  function leerHash() {
+    const m = /^#semana-(\d{1,4})$/.exec(window.location.hash);
+    const n = m ? Number(m[1]) : 0;
+    return n >= 1 ? n : 0;
+  }
+  function escribirHash() {
+    try {
+      const url = semanaVista === semanaRef()
+        ? window.location.pathname + window.location.search
+        : '#semana-' + semanaVista;
+      history.replaceState(null, '', url);
+    } catch (e) { /* no importa */ }
+  }
+
+  function etiquetaRelativa(n) {
+    const diff = n - semanaRef();
+    if (semanaDe(hoy) < 1 && n === 1) return 'Primera semana';
+    if (diff === 0) return 'Esta semana';
+    if (diff === 1) return 'Próxima semana';
+    if (diff === -1) return 'Semana pasada';
+    return diff > 0 ? `En ${diff} semanas` : `Hace ${-diff} semanas`;
+  }
+
+  function progresoPersona(n, p, pi) {
+    const datos = almacen.leer(n);
+    const tareas = tareasVisibles(bloqueDe(pi, n), n).flatMap((g) => g.tareas);
+    const hechas = tareas.filter((t) => datos[`${p.id}:${t.id}`]).length;
+    return { hechas, total: tareas.length };
+  }
+
+  /* ---------- Render: encabezado ---------- */
+  function renderHeader() {
+    const n = semanaVista;
+    const anioHoy = fecha(hoy).getUTCFullYear();
+    $('#titulo').textContent = `Semana ${n}`;
+    $('#rango').textContent = fmtRango(n, anioHoy);
+    const actual = n === semanaRef();
+    let html = `<span class="chip-meta${actual ? ' actual' : ''}">${actual ? '● ' : ''}${etiquetaRelativa(n)}</span>
+      <span class="chip-meta">🔁 Ciclo ${((n - 1) % 3) + 1} de 3</span>`;
+    if (esPar(n)) html += `<span class="chip-meta refri">🧊 Toca refri por dentro</span>`;
+    $('#meta').innerHTML = html;
+    $('#meta').style.display = 'contents';
+    $('#btnVolver').hidden = actual;
+    document.title = `Semana ${n} · Limpieza de la casa`;
+  }
+
+  /* ---------- Render: hoy ---------- */
+  function tilePersona(label, p, small) {
+    return `<div class="tile persona p-${p.id}">
+      <span class="tile-label">${label}</span>
+      <span class="tile-big">${p.nombre}</span>
+      <span class="tile-small">${small}</span>
+    </div>`;
+  }
+
+  function renderHoy() {
+    const el = $('#hoy');
+    const ref = semanaRef();
+    const sa = semanaDe(hoy);
+
+    if (semanaVista !== ref) {
+      el.innerHTML = `<div class="otra">
+        <span>👀 Estás viendo la <strong>Semana ${semanaVista}</strong> (${etiquetaRelativa(semanaVista).toLowerCase()}). La sección «Hoy» aparece en la semana actual.</span>
+        <button class="btn-link" type="button" data-accion="volver">↩ Volver a esta semana</button>
+      </div>`;
+      return;
+    }
+
+    const aspira = persona(ASPIRADO.personaId);
+
+    // Antes de que empiece la rotación
+    if (sa < 1) {
+      const faltan = Math.round((INICIO_MS - hoy) / DIA_MS);
+      const cuando = faltan === 1 ? 'mañana' : `en ${faltan} días`;
+      const d0 = diaIdx(INICIO_MS);
+      el.innerHTML = `<div class="hoy-card">
+        <p class="hoy-kicker">⏳ Muy pronto</p>
+        <h2>La rotación empieza ${cuando}<small>El ${fmtFecha(INICIO_MS)} arranca la Semana 1</small></h2>
+        <div class="tiles">
+          ${tilePersona('🗑️ Basura el primer día', basuraDe(1, d0), '3 tachos: cocina, gatos y baño')}
+          ${tocaAspirar(d0)
+            ? tilePersona('🧹 Aspirar el primer día', aspira, 'Sala y pasadizo')
+            : `<div class="tile apagado"><span class="tile-label">🧹 Aspirar</span><span class="tile-big">No toca</span></div>`}
+        </div>
+      </div>`;
+      return;
+    }
+
+    const d = diaIdx(hoy);
+    const n = sa;
+    const basura = basuraDe(n, d);
+    const finde = d >= 5;
+
+    let tileAspirar;
+    if (tocaAspirar(d)) {
+      tileAspirar = tilePersona('🧹 Hoy toca aspirar', aspira, 'Sala y pasadizo');
+    } else {
+      const prox = ASPIRADO.dias.find((x) => x > d);
+      const proxTxt = prox !== undefined ? DIAS[prox] : `${DIAS[ASPIRADO.dias[0]]} (sem. ${n + 1})`;
+      tileAspirar = `<div class="tile apagado">
+        <span class="tile-label">🧹 Aspirar sala y pasadizo</span>
+        <span class="tile-big">Hoy no toca</span>
+        <span class="tile-small">Próximo: ${proxTxt}</span>
+      </div>`;
+    }
+
+    let tileFinde = '';
+    if (finde) {
+      const items = PERSONAS.map((p, i) => {
+        const b = bloqueDe(i, n);
+        const pr = progresoPersona(n, p, i);
+        const listo = pr.hechas === pr.total;
+        return `<li class="p-${p.id}"><span class="avatar">${p.nombre[0]}</span>
+          <span>${p.nombre} → ${b.icono} ${b.nombre}</span>
+          <span class="estado${listo ? ' ok' : ''}">${listo ? '✅ Listo' : `${pr.hechas}/${pr.total}`}</span></li>`;
+      }).join('');
+      const msg = d === 5
+        ? 'Hoy o mañana: cada uno hace su bloque.'
+        : 'Último día: si no lo hiciste ayer, ¡hoy toca!';
+      tileFinde = `<div class="tile finde span-2">
+        <span class="tile-big">🧽 ¡Hoy es día de bloques!</span>
+        <span>${msg}</span>
+        <ul class="finde-list">${items}</ul>
+      </div>`;
+    }
+
+    const dm = (d + 1) % 7;
+    const nm = d === 6 ? n + 1 : n;
+    const manana = basuraDe(nm, dm);
+    const mananaAspira = tocaAspirar(dm) ? ` · 🧹 ${aspira.nombre} aspira` : '';
+
+    el.innerHTML = `<div class="hoy-card">
+      <p class="hoy-kicker">● Hoy</p>
+      <h2>${fmtFecha(hoy).replace(/^./, (c) => c.toUpperCase())}</h2>
+      <div class="tiles">
+        ${tilePersona('🗑️ Saca la basura', basura, '3 tachos: cocina, gatos y baño')}
+        ${tileAspirar}
+        ${tileFinde}
+      </div>
+      <p class="manana">Mañana: 🗑️ ${manana.nombre} saca la basura${mananaAspira}</p>
+    </div>`;
+  }
+
+  /* ---------- Render: tarjetas ---------- */
+  function renderCards() {
+    const n = semanaVista;
+    const datos = almacen.leer(n);
+    $('#cards').innerHTML = PERSONAS.map((p, i) => {
+      const b = bloqueDe(i, n);
+      const grupos = tareasVisibles(b, n);
+      const tareasHtml = grupos.map((g) => {
+        const titulo = g.titulo ? `<p class="group">${g.titulo}</p>` : '';
+        const items = g.tareas.map((t) => {
+          const key = `${p.id}:${t.id}`;
+          const hl = t.soloPares;
+          return `<label class="task${hl ? ' destacada' : ''}">
+            <input type="checkbox" data-key="${key}"${datos[key] ? ' checked' : ''}>
+            <span class="txt">${t.texto}${hl ? ' <span class="tag-hl">⭐ Toca esta semana</span>' : ''}</span>
+          </label>`;
+        }).join('');
+        return titulo + items;
+      }).join('');
+
+      const tieneRefri = b.grupos.some((g) => g.tareas.some((t) => t.soloPares));
+      const notaRefri = tieneRefri && !esPar(n)
+        ? `<p class="nota-refri">🧊 Refri por dentro: la próxima semana (solo semanas pares).</p>` : '';
+
+      const dB = diasBasura(p.id, n);
+      const extras = [];
+      if (dB.length) extras.push(`🗑️ <strong>Basura:</strong> ${dB.map((x) => DIAS_CORTOS[x]).join(' · ')}`);
+      if (p.id === ASPIRADO.personaId) extras.push(`🧹 <strong>Aspirar sala y pasadizo:</strong> ${ASPIRADO.dias.map((x) => DIAS_CORTOS[x]).join(' y ')}`);
+      const foot = extras.length
+        ? `<footer class="card-foot">Entre semana: ${extras.join('<br>')}</footer>` : '';
+
+      return `<article class="card p-${p.id}" data-persona="${p.id}">
+        <div class="card-head">
+          <div class="who"><span class="avatar">${p.nombre[0]}</span>${p.nombre}</div>
+          <span class="progress-txt" data-progreso></span>
+        </div>
+        <div class="block">
+          <span class="block-ico" aria-hidden="true">${b.icono}</span>
+          <div>
+            <div class="block-letter">Bloque ${b.letra}</div>
+            <div class="block-name">${b.nombre}</div>
+            <div class="block-time">⏱️ ~${b.minutos} min · sáb o dom</div>
+          </div>
+        </div>
+        <div class="bar" aria-hidden="true"><span data-barra></span></div>
+        <div class="tasks">${tareasHtml}${notaRefri}</div>
+        <div class="done-msg">🎉 ¡Bloque terminado! Gracias, ${p.nombre}.</div>
+        ${foot}
+      </article>`;
+    }).join('');
+    document.querySelectorAll('.card').forEach(actualizarProgreso);
+  }
+
+  function actualizarProgreso(card) {
+    const checks = card.querySelectorAll('input[type="checkbox"]');
+    const hechas = Array.from(checks).filter((c) => c.checked).length;
+    const total = checks.length;
+    card.querySelector('[data-progreso]').textContent = `${hechas}/${total} ✓`;
+    card.querySelector('[data-barra]').style.width = total ? `${(hechas / total) * 100}%` : '0';
+    card.classList.toggle('completo', total > 0 && hechas === total);
+  }
+
+  function renderGuardado() {
+    const el = $('#guardado');
+    if (almacen.ok) {
+      el.className = 'guardado';
+      el.innerHTML = `<span>💾 Tu avance se guarda <strong>solo en este dispositivo</strong>; los demás no lo ven.</span>
+        <button class="btn-link" type="button" data-accion="reiniciar">Desmarcar todo</button>`;
+    } else {
+      el.className = 'guardado error';
+      el.innerHTML = `<span>⚠️ Este navegador no permite guardar: puedes marcar tareas, pero se borrarán al cerrar la página.</span>
+        <button class="btn-link" type="button" data-accion="reiniciar">Desmarcar todo</button>`;
+    }
+  }
+
+  /* ---------- Render: calendario ---------- */
+  function renderCalendario() {
+    const n = semanaVista;
+    const ini = inicioSemana(n);
+    const aspira = persona(ASPIRADO.personaId);
+    $('#calendario').innerHTML = [0, 1, 2, 3, 4, 5, 6].map((d) => {
+      const ms = ini + d * DIA_MS;
+      const esHoy = ms === hoy;
+      const finde = d >= 5;
+      const b = basuraDe(n, d);
+      let chips = `<span class="chip p-${b.id}">🗑️ Basura · <b>${b.nombre}</b></span>`;
+      if (tocaAspirar(d)) chips += `<span class="chip p-${aspira.id}">🧹 Aspirar · <b>${aspira.nombre}</b></span>`;
+      if (finde) chips += `<span class="chip bloques">🧽 Día de bloques</span>`;
+      return `<li class="dia${finde ? ' finde' : ''}${esHoy ? ' es-hoy' : ''}"${esHoy ? ' aria-current="date"' : ''}>
+        ${esHoy ? '<span class="badge-hoy">HOY</span>' : ''}
+        <div class="dia-fecha"><span class="dn">${DIAS_CORTOS[d]}</span><span class="dd">${fecha(ms).getUTCDate()}</span></div>
+        <div class="dia-tareas">${chips}</div>
+      </li>`;
+    }).join('');
+  }
+
+  /* ---------- Render: próximas semanas ---------- */
+  function renderProximas() {
+    const anioHoy = fecha(hoy).getUTCFullYear();
+    $('#proximas').innerHTML = [semanaVista + 1, semanaVista + 2].map((n) => {
+      const filas = PERSONAS.map((p, i) => {
+        const b = bloqueDe(i, n);
+        return `<li class="p-${p.id}"><span class="avatar">${p.nombre[0]}</span>
+          <span class="nom">${p.nombre}</span><span class="flecha">→</span>
+          <span class="blq">${b.icono} ${b.letra} · ${b.nombre}</span></li>`;
+      }).join('');
+      const basuraTxt = ['astrid', 'jimmy']
+        .map((id) => `${persona(id).nombre}: ${diasBasura(id, n).map((x) => DIAS_CORTOS[x]).join(', ')}`)
+        .join(' — ');
+      return `<button class="prox" type="button" data-ir="${n}">
+        <div class="prox-head"><strong>Semana ${n}</strong><span>${fmtRango(n, anioHoy)}</span></div>
+        <ul>${filas}</ul>
+        <p class="prox-extra">🗑️ ${basuraTxt}${esPar(n) ? '<br>🧊 Toca refri por dentro' : ''}</p>
+        <span class="prox-ver">Ver semana ${n} →</span>
+      </button>`;
+    }).join('');
+  }
+
+  /* ---------- Render general ---------- */
+  function render() {
+    renderHeader();
+    renderHoy();
+    renderCards();
+    renderGuardado();
+    renderCalendario();
+    renderProximas();
+    $('#btnPrev').disabled = semanaVista <= 1;
+    escribirHash();
+  }
+
+  function irA(n, desplazar) {
+    semanaVista = Math.max(1, n);
+    render();
+    if (desplazar) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ---------- Eventos ---------- */
+  $('#btnPrev').addEventListener('click', () => irA(semanaVista - 1));
+  $('#btnNext').addEventListener('click', () => irA(semanaVista + 1));
+  $('#btnVolver').addEventListener('click', () => irA(semanaRef(), true));
+
+  $('#cards').addEventListener('change', (e) => {
+    const input = e.target;
+    if (!input.matches('input[type="checkbox"]')) return;
+    const datos = Object.assign({}, almacen.leer(semanaVista));
+    if (input.checked) datos[input.dataset.key] = true;
+    else delete datos[input.dataset.key];
+    almacen.guardar(semanaVista, datos);
+    actualizarProgreso(input.closest('.card'));
+    if (semanaVista === semanaRef() && diaIdx(hoy) >= 5) renderHoy();
+  });
+
+  document.addEventListener('click', (e) => {
+    const accion = e.target.closest('[data-accion]');
+    if (accion) {
+      if (accion.dataset.accion === 'volver') irA(semanaRef(), true);
+      if (accion.dataset.accion === 'reiniciar' &&
+          window.confirm(`¿Desmarcar todas las tareas de la Semana ${semanaVista}?`)) {
+        almacen.guardar(semanaVista, {});
+        render();
+      }
+      return;
+    }
+    const ir = e.target.closest('[data-ir]');
+    if (ir) irA(Number(ir.dataset.ir), true);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.closest('input, textarea, select') || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft' && semanaVista > 1) irA(semanaVista - 1);
+    if (e.key === 'ArrowRight') irA(semanaVista + 1);
+  });
+
+  window.addEventListener('hashchange', () => {
+    const n = leerHash();
+    if (n && n !== semanaVista) irA(n);
+  });
+
+  // Si la página queda abierta, se actualiza sola al cambiar de día.
+  function revisarCambioDeDia() {
+    const nuevo = hoyMs();
+    if (nuevo === hoy) return;
+    const estabaEnActual = semanaVista === semanaRef();
+    hoy = nuevo;
+    if (estabaEnActual) semanaVista = semanaRef();
+    render();
+  }
+  setInterval(revisarCambioDeDia, 60 * 1000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') revisarCambioDeDia();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
